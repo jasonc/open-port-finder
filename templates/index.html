@@ -1,0 +1,109 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Port Finder</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            text-align: center;
+        }
+        .container {
+            background-color: #1a1a1a;
+        }
+        .instructions {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        input {
+            background-color: #3d3d3d;
+            border: 1px solid #505050;
+            color: #e0e0e0;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 1.2rem;
+            width: 120px;
+            margin-bottom: 1rem;
+        }
+        button {
+            background-color: #4a9eff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 1.2rem;
+            display: block;
+            margin: 0 auto;
+        }
+        button:hover {
+            background-color: #357abd;
+        }
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+        .error {
+            background-color: #491a1a;
+            border: 1px solid #c62828;
+        }
+        .port-number {
+            font-size: 2rem;
+            margin-top: 0.5rem;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Open Port Finder</h1>
+        <p class="instructions">Enter your desired port number:</p>
+        
+        <input type="number" id="portInput" min="1" max="65535">
+        <button onclick="findPort()">Find Port</button>
+        
+        <div id="result" style="display: none;" class="result"></div>
+    </div>
+
+    <script>
+        // Set focus to input box on page load
+        window.onload = function() {
+            document.getElementById('portInput').focus();
+        };
+
+        async function findPort() {
+            const portInput = document.getElementById('portInput');
+            const resultDiv = document.getElementById('result');
+            const port = portInput.value;
+
+            if (!port || port < 1 || port > 65535) {
+                alert('Please enter a valid port number (1-65535)');
+                return;
+            }
+
+            try {
+                const response = await axios.get(`/find_port/${port}`);
+                resultDiv.className = 'result success';
+                const portNumber = response.data.message.split(' ').pop();
+                resultDiv.innerHTML = 'The next available port is:<br><span class="port-number">' + portNumber + '</span>';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = error.response?.data?.message || 'Error finding available port';
+            }
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

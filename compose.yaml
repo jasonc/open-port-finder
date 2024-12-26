@@ -1,0 +1,6 @@
+services:
+  open-port-finder:
+    image: jasonc/open-port-finder:latest
+    container_name: open-port-finder
+    network_mode: host
+    restart: unless-stopped
