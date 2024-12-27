@@ -1,4 +1,3 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,7 +29,7 @@
             padding: 0.5rem;
             border-radius: 4px;
             font-size: 1.2rem;
-            width: 120px;
+            width: 92px;
             margin-bottom: 1rem;
         }
         button {
@@ -50,10 +49,10 @@
         }
         .result {
             margin-top: 1rem;
-            padding: 1rem;
+            padding: 0px;
             border-radius: 4px;
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
         }
         .error {
             background-color: #491a1a;
@@ -61,8 +60,43 @@
         }
         .port-number {
             font-size: 2rem;
-            margin-top: 0.5rem;
+            margin-top: 0.2rem;
+            display: inline-block;
+        }
+        .copy-icon {
+            cursor: pointer;
+            margin-left: 8px;
+            vertical-align: super;
+            color: #4a9eff;
+            transition: color 0.2s;
+            padding-top: 6px;
+            display: inline-block;
+        }
+        .copy-icon:hover {
+            color: #357abd;
+        }
+        .port-result-container {
+            position: relative;
+            display: inline-block;
+            padding: 0 30px;  /* Space for icon */
+            margin: 0.5rem 0;
+        }
+        .port-number {
+            font-size: 2rem;
+            text-align: center;
             display: block;
+            margin-top: 0.2rem;
+        }
+        .copy-icon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            cursor: pointer;
+            color: #4a9eff;
+            transition: color 0.2s;
+        }
+        .copy-icon:hover {
+            color: #357abd;
         }
     </style>
 </head>
@@ -81,6 +115,13 @@
         // Set focus to input box on page load
         window.onload = function() {
             document.getElementById('portInput').focus();
+            
+            // Add event listener for Enter key
+            document.getElementById('portInput').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    findPort(); // Call findPort function on Enter key press
+                }
+            });
         };
 
         async function findPort() {
@@ -97,12 +138,30 @@
                 const response = await axios.get(`/find_port/${port}`);
                 resultDiv.className = 'result success';
                 const portNumber = response.data.message.split(' ').pop();
-                resultDiv.innerHTML = 'The next available port is:<br><span class="port-number">' + portNumber + '</span>';
+                resultDiv.innerHTML = 'The next available port is:<br><div class="port-result-container"><span class="port-number">' + 
+                    portNumber + 
+                    '</span><span class="copy-icon" onclick="copyToClipboard(\'' + portNumber + 
+                    '\')"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></span></div>';
             } catch (error) {
                 resultDiv.className = 'result error';
                 resultDiv.innerHTML = error.response?.data?.message || 'Error finding available port';
             }
             resultDiv.style.display = 'block';
+        }
+
+        async function copyToClipboard(text) {
+            try {
+                const tempInput = document.createElement('input');
+                tempInput.style.position = 'absolute';
+                tempInput.style.left = '-9999px';
+                tempInput.value = text;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+            } catch (err) {
+                console.error('Could not copy text: ', err);
+            }
         }
     </script>
 </body>
