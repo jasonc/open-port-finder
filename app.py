@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, jsonify, render_template
+from flask import Flask, render_template
 import socket
 from typing import Optional
 
@@ -42,15 +42,15 @@ def index():
 def find_port(desired_port):
     open_port = find_open_port(desired_port)
     if open_port:
-        return jsonify({
+        return {
             'success': True,
             'port': open_port,
             'message': f'The next available port is {open_port}'
-        })
-    return jsonify({
+        }
+    return {
         'success': False,
         'message': f'No open ports found'
-    }), 404
+    }, 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=56789)

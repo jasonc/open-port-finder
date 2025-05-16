@@ -1,2 +1,2 @@
 # requirements.txt
-flask==2.3.3
+flask==3.0.0
